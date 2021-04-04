@@ -7,13 +7,16 @@ import vpython as vp
 ------------------------------------------------------------------------------------
 """
 
-scene_main = vp.canvas(width=400, height=200, userzoom=False, userspan=False,
+scene_main = vp.canvas(width=600, height=200, userzoom=False, userspan=False,
                        fov=0.001, userspin=False, autoscale=False, background=vp.color.black)
 
 scene_main.append_to_caption("\n")
 
-atom = vp.sphere(radius=0.4, color=vp.color.cyan, emissive=True)
-lattice = vp.box(length=40, width=None, height=0.2)
+atom = [vp.sphere(radius=0.4, color=vp.color.cyan, emissive=True)]
+for i in range(1, 14):
+    atom.append(vp.sphere(pos=vp.vector(4 * i, 0, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
+
+lattice = vp.box(length=60, width=None, height=0.2)
 
 """
 ------------------------------------------------------------------------------------
@@ -25,10 +28,20 @@ lattice = vp.box(length=40, width=None, height=0.2)
 def add_atom(s):
     wt.text = s.value
 
+    for i in range(14):
+        atom[i].visible = False
 
-sl = vp.slider(min=1, max=12, value=1, step=1, bind=add_atom)
+    atom[0].pos.x = 2 - 2 * s.value
+    for j in range(1, 14):
+        atom[j].pos.x = atom[0].pos.x + 4 * j
 
+    for i in range(s.value):
+        atom[i].visible = True
+
+
+sl = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
 wt = vp.wtext(text=sl.value)
+scene_main.append_to_caption(" atoms")
 
 """
 ------------------------------------------------------------------------------------
