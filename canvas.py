@@ -48,6 +48,12 @@ scene_main.append_to_caption(" atoms")
                                         animation
 ------------------------------------------------------------------------------------
 """
-
+x = 0
 while True:
-    vp.rate(100)
+    vp.rate(50)
+    for i in range(14):
+        atom[i].pos.y = 2 * np.sin(i + 2 * x * np.pi)
+
+    x = x + 0.01
+    if x == 2:
+        x = 0
