@@ -16,7 +16,9 @@ atom = [vp.sphere(radius=0.4, color=vp.color.cyan, emissive=True)]
 for i in range(1, 14):
     atom.append(vp.sphere(pos=vp.vector(4 * i, 0, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
 
-lattice = vp.box(length=60, width=None, height=0.2)
+lattice_1 = vp.box(pos=vp.vector(0, 5, 0), length=60, width=None, height=0.2)
+lattice_2 = vp.box(length=60, width=None, height=0.2)
+lattice_3 = vp.box(pos=vp.vector(0, -5, 0), length=60, width=None, height=0.2)
 
 """
 ------------------------------------------------------------------------------------
