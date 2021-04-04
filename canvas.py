@@ -33,9 +33,8 @@ def add_atom(s):
     for i in range(14):
         atom[i].visible = False
 
-    atom[0].pos.x = 2 - 2 * s.value
-    for j in range(1, 14):
-        atom[j].pos.x = atom[0].pos.x + 4 * j
+    for j in range(0, 14):
+        atom[j].pos.x = (2 - 2 * s.value) + 4 * j
 
     for i in range(s.value):
         atom[i].visible = True
@@ -50,11 +49,11 @@ scene_main.append_to_caption(" atoms")
                                         animation
 ------------------------------------------------------------------------------------
 """
-x = 0
+x = np.pi/2
 while True:
     vp.rate(50)
     for i in range(14):
-        atom[i].pos.y = 2 * np.sin(i + 2 * x * np.pi)
+        atom[i].pos.x = atom[i].pos.x + 0.01 * np.sin(x + i)
 
     x = x + 0.01
     if x == 2:
