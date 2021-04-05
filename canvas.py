@@ -59,6 +59,7 @@ drag = False
 atom_select = None
 # stop atom motion variable here
 
+
 def down():
     global drag, atom_select
     for i in range(14):
