@@ -28,7 +28,7 @@ lattice_3 = vp.box(pos=vp.vector(0, -5, 0), length=60, width=None, height=0.2)
 
 
 def add_atom(s):
-    wt.text = s.value
+    wt_a.text = s.value
 
     for i in range(14):
         atom[i].visible = False
@@ -40,15 +40,27 @@ def add_atom(s):
         atom[i].visible = True
 
 
-sl = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
-wt = vp.wtext(text=sl.value)
-scene_main.append_to_caption(" atoms")
+sl_a = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
+wt_a = vp.wtext(text=sl_a.value)
+scene_main.append_to_caption(" atoms\n\n")
+
+
+def spring(s):
+    wt_k.text = s.value
+
+
+sl_k = vp.slider(min=0, max=10, value=0, step=0.1, bind=spring)
+wt_k = vp.wtext(text=sl_k.value)
+scene_main.append_to_caption("k N/m\n\n")
 
 """
 ------------------------------------------------------------------------------------
                                         animation
 ------------------------------------------------------------------------------------
 """
+
+# Mouse stuff
+
 x = np.pi/2
 while True:
     vp.rate(50)
