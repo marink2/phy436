@@ -57,7 +57,7 @@ scene_main.append_to_caption("k N/m\n\n")
 
 drag = False
 atom_select = None
-# stop atom motion variable here
+# *stop atom motion variable here*
 
 
 def down():
