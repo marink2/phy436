@@ -53,19 +53,49 @@ sl_k = vp.slider(min=0, max=10, value=0, step=0.1, bind=spring)
 wt_k = vp.wtext(text=sl_k.value)
 scene_main.append_to_caption("k N/m\n\n")
 
+# Mouse clicking controls
+
+drag = False
+atom_select = None
+# stop atom motion variable here
+
+def down():
+    global drag, atom_select
+    for i in range(14):
+        if (atom[i].pos.x - 0.4 <= scene_main.mouse.pos.x <= atom[i].pos.x + 0.4) and (atom[i].pos.y - 0.4 <= scene_main.mouse.pos.y <= atom[i].pos.y + 0.4):
+            drag = True
+            atom_select = i
+
+
+def move():
+    global drag, atom_select
+    if drag:
+        atom[atom_select].pos.x = scene_main.mouse.pos.x
+
+
+def up():
+    global drag, atom_select
+    drag = False
+    atom_select = None
+
+
+scene_main.bind("mousedown", down)
+
+scene_main.bind("mousemove", move)
+
+scene_main.bind("mouseup", up)
+
 """
 ------------------------------------------------------------------------------------
                                         animation
 ------------------------------------------------------------------------------------
 """
 
-# Mouse stuff
-
 x = np.pi/2
 while True:
     vp.rate(50)
     for i in range(14):
-        atom[i].pos.x = atom[i].pos.x + 0.01 * np.sin(x + i)
+        atom[i].pos.x = atom[i].pos.x + 0.06 * np.sin(x + i)
 
     x = x + 0.01
     if x == 2:
