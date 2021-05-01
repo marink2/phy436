@@ -31,6 +31,24 @@ lattice_3 = vp.box(pos=vp.vector(0, -5, 0), length=60, width=None, height=0.2)
 ------------------------------------------------------------------------------------
 """
 
+switch = True
+
+
+def toggle(b):
+    global switch
+    if switch:
+        b.text = '<b>Two Atom Type<b>'
+        b.background = vp.color.green
+        switch = False
+
+    else:
+        b.text = '<b>One Atom Type<b>'
+        b.background = vp.color.cyan
+        switch = True
+
+
+s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=scene_main.title_anchor, bind=toggle)
+
 
 def add_atom(s):
     wt_a.text = s.value
