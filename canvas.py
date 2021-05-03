@@ -27,6 +27,9 @@ for i in range(1, 14):
 lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=60, width=None, height=0.2)
 lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=60, width=None, height=0.2)
 
+#phase =
+#phase2 =
+
 """
 ------------------------------------------------------------------------------------
                                         controls
@@ -90,9 +93,9 @@ def spring(s):
     K = K_initial * s.value
 
 
-sl_K = vp.slider(min=0, max=10, value=0, step=0.1, bind=spring)
+sl_K = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=spring)
 wt_K = vp.wtext(text=sl_K.value)
-scene_main.append_to_caption("K N/m\n\n")
+scene_main.append_to_caption("K N/m (Spring Force)\n\n")
 
 
 def wave(s):
@@ -104,7 +107,31 @@ def wave(s):
 
 sl_k = vp.slider(min=0, max=1, value=0, step=0.1, bind=wave)
 wt_k = vp.wtext(text=sl_k.value)
-scene_main.append_to_caption("PI / a\n\n")
+scene_main.append_to_caption(" π/a (Wavenumber)\n\n")
+
+
+def mass_M(s):
+    global M_initial, M, t
+    t = 0
+    wt_M.text = s.value
+    M = M_initial * s.value
+
+
+sl_M = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=mass_M)
+wt_M = vp.wtext(text=sl_M.value)
+scene_main.append_to_caption("M (mass cyan)\n\n")
+
+
+def mass_m(s):
+    global m_initial, m, t
+    t = 0
+    wt_m.text = s.value
+    m = m_initial * s.value
+
+
+sl_m = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=mass_m)
+wt_m = vp.wtext(text=sl_m.value)
+scene_main.append_to_caption("m (mass red)\n\n")
 
 # Mouse clicking controls
 
@@ -146,13 +173,15 @@ scene_main.bind("mouseup", up)
 """
 
 K_initial = 4
-K = 0
+K = 0.1
 A = 2
 a = 4
 k_initial = np.pi / a
-k = 1
-M = 1
-m = 0.5
+k = 0.1
+M_initial = 4
+M = 0.1
+m_initial = 4
+m = 0.1
 t = 0
 
 
