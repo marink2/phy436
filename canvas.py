@@ -14,21 +14,22 @@ scene_main.append_to_caption("\n")
 
 atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True)]
 pos_x_initial = [0]
+phase = [vp.sphere(pos=vp.vector(0, -3, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
     atom.append(vp.sphere(pos=vp.vector(4 * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
     pos_x_initial.append(4 * i)
+    phase.append(vp.sphere(pos=vp.vector(4 * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
 atom2 = [vp.sphere(pos=vp.vector(2, 13, 0), radius=0.4, color=vp.color.red, emissive=True)]
 pos2_x_initial = [2]
+phase2 = [vp.sphere(pos=vp.vector(2, 17, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
     atom2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 13, 0), radius=0.4, color=vp.color.red, emissive=True, visible=False))
     pos2_x_initial.append((4 * i) + 2)
+    phase2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 17, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
 lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=60, width=None, height=0.2)
 lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=60, width=None, height=0.2)
-
-#phase =
-#phase2 =
 
 """
 ------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ def toggle(b):
 
         for i in range(14):
             atom2[i].pos.y = 3
+            phase2[i].pos.y = phase2[i].pos.y - 20
 
     else:
         b.text = '<b>One Atom Type<b>'
@@ -55,6 +57,7 @@ def toggle(b):
         switch = True
         for i in range(14):
             atom2[i].pos.y = 13
+            phase2[i].pos.y = phase2[i].pos.y + 20
 
 
 s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=scene_main.title_anchor, bind=toggle)
@@ -68,10 +71,14 @@ def add_atom(s):
     for i in range(14):
         atom[i].visible = False
         atom2[i].visible = False
+        phase[i].visible = False
+        phase2[i].visible = False
 
     for j in range(14):
         atom[j].pos.x = (2 - 2 * s.value) + 4 * j
         atom2[j].pos.x = (2 - 2 * s.value) + (4 * j + 2)
+        phase[j].pos.x = (2 - 2 * s.value) + 4 * j
+        phase2[j].pos.x = (2 - 2 * s.value) + (4 * j + 2)
 
     for j in range(14):
         pos_x_initial[j] = atom[j].pos.x
@@ -80,6 +87,8 @@ def add_atom(s):
     for i in range(s.value):
         atom[i].visible = True
         atom2[i].visible = True
+        phase[i].visible = True
+        phase2[i].visible = True
 
 
 sl_a = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
@@ -105,7 +114,7 @@ def wave(s):
     k = k_initial * s.value
 
 
-sl_k = vp.slider(min=0, max=1, value=0, step=0.1, bind=wave)
+sl_k = vp.slider(min=0.1, max=1, value=0.1, step=0.1, bind=wave)
 wt_k = vp.wtext(text=sl_k.value)
 scene_main.append_to_caption(" π/a (Wavenumber)\n\n")
 
