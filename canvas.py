@@ -20,11 +20,11 @@ for i in range(1, 14):
     pos_x_initial.append(4 * i)
     phase.append(vp.sphere(pos=vp.vector(4 * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
-atom2 = [vp.sphere(pos=vp.vector(2, 13, 0), radius=0.4, color=vp.color.red, emissive=True)]
+atom2 = [vp.sphere(pos=vp.vector(2, 13, 0), radius=0.3, color=vp.color.red, emissive=True)]
 pos2_x_initial = [2]
 phase2 = [vp.sphere(pos=vp.vector(2, 17, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
-    atom2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 13, 0), radius=0.4, color=vp.color.red, emissive=True, visible=False))
+    atom2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 13, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False))
     pos2_x_initial.append((4 * i) + 2)
     phase2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 17, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
@@ -114,9 +114,21 @@ def wave(s):
     k = k_initial * s.value
 
 
-sl_k = vp.slider(min=0.1, max=1, value=0.1, step=0.1, bind=wave)
+sl_k = vp.slider(min=-1, max=1, value=-1, step=0.05, bind=wave)
 wt_k = vp.wtext(text=sl_k.value)
 scene_main.append_to_caption(" π/a (Wavenumber)\n\n")
+
+
+def constant_A(s):
+    global A_initial, A, t
+    t = 0
+    wt_A.text = s.value
+    A = A_initial * s.value
+
+
+sl_A = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=constant_A)
+wt_A = vp.wtext(text=sl_A.value)
+scene_main.append_to_caption("A (Constant)\n\n")
 
 
 def mass_M(s):
@@ -183,10 +195,11 @@ scene_main.bind("mouseup", up)
 
 K_initial = 4
 K = 0.1
-A = 2
+A_initial = 2
+A = 0.1
 a = 4
 k_initial = np.pi / a
-k = 0.1
+k = -1 * k_initial
 M_initial = 4
 M = 0.1
 m_initial = 4
