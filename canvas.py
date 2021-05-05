@@ -95,9 +95,11 @@ def add_atom(s):
     t = 0
     wt_atom.text = s.value
     N = s.value / 2
+    k = 0
 
     for h in range(15):
         k_buttons[h].disabled = True
+        k_buttons[h].background = vp.color.white
 
     for h in range(s.value + 1):
         k_buttons[h + (int(0.5 * (14 - s.value)))].disabled = False
@@ -126,8 +128,6 @@ def add_atom(s):
             atom2[i].visible = True
             phase2[i].visible = True
 
-    wave(k_buttons[int(k * N / k_initial)])
-
 
 sl_atom = vp.slider(min=2, max=14, value=2, step=2, bind=add_atom)
 wt_atom = vp.wtext(text=sl_atom.value)
@@ -137,10 +137,10 @@ scene_main.append_to_caption(" atoms\n\n")
 def lattice_spacing(s):
     global a, k_initial, k, N, t
     t = 0
+    k = 0
     wt_a.text = s.value
     a = s.value
     add_atom(sl_atom)
-    wave(k_buttons[int(k * N / k_initial)])
 
 
 sl_a = vp.slider(min=4, max=10, value=4, step=1, bind=lattice_spacing)
@@ -149,7 +149,12 @@ scene_main.append_to_caption("a (lattice)\n\n")
 
 
 def wave(b):
-    global k_initial, k, N, t
+    global k_initial, k, k_buttons, N, t
+
+    for h in range(15):
+        k_buttons[h].background = vp.color.white
+
+    b.background = vp.color.orange
     t = 0
     k = int(b.text) * k_initial / N
 
