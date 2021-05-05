@@ -12,9 +12,9 @@ K = 0.1
 A_initial = 2
 A = 0.1
 a = 4
+N = 1
 k_initial = np.pi / a
-k = -1 * (np.pi / a)
-vals = [1]
+k = 0
 M_initial = 4
 M = 0.1
 m_initial = 4
@@ -36,17 +36,24 @@ atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=0.4, color=vp.color.cyan, emiss
 pos_x_initial = [0]
 phase = [vp.sphere(pos=vp.vector(0, -3, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
-    atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
+    if i == 1:
+        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=True))
+        phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=True))
+
+    else:
+        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
+        phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
+
     pos_x_initial.append(a * i)
-    phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
+
 
 atom2 = [vp.sphere(pos=vp.vector(0.5 * a, 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False)]
 pos2_x_initial = [0.5 * a]
 phase2 = [vp.sphere(pos=vp.vector(0.5 * a, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False)]
 for i in range(1, 14):
     atom2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False))
-    pos2_x_initial.append((a * i) + (0.5 * a))
     phase2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
+    pos2_x_initial.append((a * i) + (0.5 * a))
 
 lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=6000, width=None, height=0.2)
 lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=6000, width=None, height=0.2)
@@ -84,9 +91,16 @@ s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=s
 
 
 def add_atom(s):
-    global t
+    global k_initial, k, N, t
     t = 0
     wt_atom.text = s.value
+    N = s.value / 2
+
+    for h in range(15):
+        k_buttons[h].disabled = True
+
+    for h in range(s.value + 1):
+        k_buttons[h + (int(0.5 * (14 - s.value)))].disabled = False
 
     for i in range(14):
         atom[i].visible = False
@@ -108,24 +122,25 @@ def add_atom(s):
         atom[i].visible = True
         phase[i].visible = True
 
-        vals.append(i + 1)
-
         if not switch:
             atom2[i].visible = True
             phase2[i].visible = True
 
+    wave(k_buttons[int(k * N / k_initial)])
 
-sl_atom = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
+
+sl_atom = vp.slider(min=2, max=14, value=2, step=2, bind=add_atom)
 wt_atom = vp.wtext(text=sl_atom.value)
 scene_main.append_to_caption(" atoms\n\n")
 
 
 def lattice_spacing(s):
-    global a, t
+    global a, k_initial, k, N, t
     t = 0
     wt_a.text = s.value
     a = s.value
     add_atom(sl_atom)
+    wave(k_buttons[int(k * N / k_initial)])
 
 
 sl_a = vp.slider(min=4, max=10, value=4, step=1, bind=lattice_spacing)
@@ -133,16 +148,21 @@ wt_a = vp.wtext(text=sl_a.value)
 scene_main.append_to_caption("a (lattice)\n\n")
 
 
-def wave(s):
-    global k_initial, k, t
+def wave(b):
+    global k_initial, k, N, t
     t = 0
-    wt_k.text = s.value
-    k = s.value * k_initial
+    k = int(b.text) * k_initial / N
 
 
-sl_k = vp.slider(min=-1, max=1, value=-1, step=0.01, bind=wave)
-wt_k = vp.wtext(text=sl_k.value)
-scene_main.append_to_caption("π/a (k)\n\n\n\n")
+k_buttons = []
+for i in range(-7, 8):
+    if i == 0 or i == -1 or i == 1:
+        k_buttons.append(vp.button(text=str(i), background=vp.color.white, bind=wave, disabled=False))
+
+    else:
+        k_buttons.append(vp.button(text=str(i), background=vp.color.white, bind=wave, disabled=True))
+
+scene_main.append_to_caption(" 2π/Na (k)\n\n\n\n")
 
 
 def spring(s):
