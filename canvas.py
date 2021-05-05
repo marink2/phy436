@@ -3,11 +3,31 @@ import vpython as vp
 
 """
 ------------------------------------------------------------------------------------
-                                        setup
+                                        Parameter Values
 ------------------------------------------------------------------------------------
 """
 
-scene_main = vp.canvas(width=600, height=200, userzoom=False, userspan=False,
+K_initial = 4
+K = 0.1
+A_initial = 2
+A = 0.1
+a = 4
+k_initial = np.pi / a
+k = -1 * (np.pi / a)
+vals = [1]
+M_initial = 4
+M = 0.1
+m_initial = 4
+m = 0.1
+t = 0
+
+"""
+------------------------------------------------------------------------------------
+                                        Setup
+------------------------------------------------------------------------------------
+"""
+
+scene_main = vp.canvas(width=600, height=200, userzoom=True, userspan=False,
                        fov=0.001, userspin=False, autoscale=False, background=vp.color.black)
 
 scene_main.append_to_caption("\n")
@@ -16,20 +36,20 @@ atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=0.4, color=vp.color.cyan, emiss
 pos_x_initial = [0]
 phase = [vp.sphere(pos=vp.vector(0, -3, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
-    atom.append(vp.sphere(pos=vp.vector(4 * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
-    pos_x_initial.append(4 * i)
-    phase.append(vp.sphere(pos=vp.vector(4 * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
+    atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
+    pos_x_initial.append(a * i)
+    phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
-atom2 = [vp.sphere(pos=vp.vector(2, 13, 0), radius=0.3, color=vp.color.red, emissive=True)]
-pos2_x_initial = [2]
-phase2 = [vp.sphere(pos=vp.vector(2, 17, 0), radius=0.4, color=vp.color.white, emissive=True)]
+atom2 = [vp.sphere(pos=vp.vector(0.5 * a, 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False)]
+pos2_x_initial = [0.5 * a]
+phase2 = [vp.sphere(pos=vp.vector(0.5 * a, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False)]
 for i in range(1, 14):
-    atom2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 13, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False))
-    pos2_x_initial.append((4 * i) + 2)
-    phase2.append(vp.sphere(pos=vp.vector((4 * i) + 2, 17, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
+    atom2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False))
+    pos2_x_initial.append((a * i) + (0.5 * a))
+    phase2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
-lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=60, width=None, height=0.2)
-lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=60, width=None, height=0.2)
+lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=6000, width=None, height=0.2)
+lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=6000, width=None, height=0.2)
 
 """
 ------------------------------------------------------------------------------------
@@ -47,17 +67,17 @@ def toggle(b):
         b.background = vp.color.green
         switch = False
 
-        for i in range(14):
-            atom2[i].pos.y = 3
-            phase2[i].pos.y = phase2[i].pos.y - 20
+        for i in range(sl_atom.value):
+            atom2[i].visible = True
+            phase2[i].visible = True
 
     else:
         b.text = '<b>One Atom Type<b>'
         b.background = vp.color.cyan
         switch = True
         for i in range(14):
-            atom2[i].pos.y = 13
-            phase2[i].pos.y = phase2[i].pos.y + 20
+            atom2[i].visible = False
+            phase2[i].visible = False
 
 
 s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=scene_main.title_anchor, bind=toggle)
@@ -66,7 +86,7 @@ s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=s
 def add_atom(s):
     global t
     t = 0
-    wt_a.text = s.value
+    wt_atom.text = s.value
 
     for i in range(14):
         atom[i].visible = False
@@ -75,10 +95,10 @@ def add_atom(s):
         phase2[i].visible = False
 
     for j in range(14):
-        atom[j].pos.x = (2 - 2 * s.value) + 4 * j
-        atom2[j].pos.x = (2 - 2 * s.value) + (4 * j + 2)
-        phase[j].pos.x = (2 - 2 * s.value) + 4 * j
-        phase2[j].pos.x = (2 - 2 * s.value) + (4 * j + 2)
+        atom[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
+        atom2[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
+        phase[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
+        phase2[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
 
     for j in range(14):
         pos_x_initial[j] = atom[j].pos.x
@@ -86,14 +106,43 @@ def add_atom(s):
 
     for i in range(s.value):
         atom[i].visible = True
-        atom2[i].visible = True
         phase[i].visible = True
-        phase2[i].visible = True
+
+        vals.append(i + 1)
+
+        if not switch:
+            atom2[i].visible = True
+            phase2[i].visible = True
 
 
-sl_a = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
-wt_a = vp.wtext(text=sl_a.value)
+sl_atom = vp.slider(min=1, max=14, value=1, step=1, bind=add_atom)
+wt_atom = vp.wtext(text=sl_atom.value)
 scene_main.append_to_caption(" atoms\n\n")
+
+
+def lattice_spacing(s):
+    global a, t
+    t = 0
+    wt_a.text = s.value
+    a = s.value
+    add_atom(sl_atom)
+
+
+sl_a = vp.slider(min=4, max=10, value=4, step=1, bind=lattice_spacing)
+wt_a = vp.wtext(text=sl_a.value)
+scene_main.append_to_caption("a (lattice)\n\n")
+
+
+def wave(s):
+    global k_initial, k, t
+    t = 0
+    wt_k.text = s.value
+    k = s.value * k_initial
+
+
+sl_k = vp.slider(min=-1, max=1, value=-1, step=0.01, bind=wave)
+wt_k = vp.wtext(text=sl_k.value)
+scene_main.append_to_caption("π/a (k)\n\n\n\n")
 
 
 def spring(s):
@@ -107,18 +156,6 @@ wt_K = vp.wtext(text=sl_K.value)
 scene_main.append_to_caption("K N/m (Spring Force)\n\n")
 
 
-def wave(s):
-    global k_initial, k, t
-    t = 0
-    wt_k.text = s.value
-    k = k_initial * s.value
-
-
-sl_k = vp.slider(min=-1, max=1, value=-1, step=0.05, bind=wave)
-wt_k = vp.wtext(text=sl_k.value)
-scene_main.append_to_caption(" π/a (Wavenumber)\n\n")
-
-
 def constant_A(s):
     global A_initial, A, t
     t = 0
@@ -128,7 +165,7 @@ def constant_A(s):
 
 sl_A = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=constant_A)
 wt_A = vp.wtext(text=sl_A.value)
-scene_main.append_to_caption("A (Constant)\n\n")
+scene_main.append_to_caption("A (Constant)\n\n\n\n")
 
 
 def mass_M(s):
@@ -156,56 +193,42 @@ scene_main.append_to_caption("m (mass red)\n\n")
 
 # Mouse clicking controls
 
-drag = False
-atom_select = None
-
-
-def down():
-    global drag, atom_select
-    for i in range(14):
-        if (atom[i].pos.x - 0.4 <= scene_main.mouse.pos.x <= atom[i].pos.x + 0.4) and (
-                atom[i].pos.y - 0.4 <= scene_main.mouse.pos.y <= atom[i].pos.y + 0.4):
-            drag = True
-            atom_select = i
-
-
-def move():
-    global drag, atom_select
-    if drag:
-        atom[atom_select].pos.x = scene_main.mouse.pos.x
-
-
-def up():
-    global drag, atom_select
-    drag = False
-    atom_select = None
-
-
-scene_main.bind("mousedown", down)
-
-scene_main.bind("mousemove", move)
-
-scene_main.bind("mouseup", up)
+# drag = False
+# atom_select = None
+#
+#
+# def down():
+#     global drag, atom_select
+#     for i in range(14):
+#         if (atom[i].pos.x - 0.4 <= scene_main.mouse.pos.x <= atom[i].pos.x + 0.4) and (
+#                 atom[i].pos.y - 0.4 <= scene_main.mouse.pos.y <= atom[i].pos.y + 0.4):
+#             drag = True
+#             atom_select = i
+#
+#
+# def move():
+#     global drag, atom_select
+#     if drag:
+#         atom[atom_select].pos.x = scene_main.mouse.pos.x
+#
+#
+# def up():
+#     global drag, atom_select
+#     drag = False
+#     atom_select = None
+#
+#
+# scene_main.bind("mousedown", down)
+#
+# scene_main.bind("mousemove", move)
+#
+# scene_main.bind("mouseup", up)
 
 """
 ------------------------------------------------------------------------------------
                                         animation
 ------------------------------------------------------------------------------------
 """
-
-K_initial = 4
-K = 0.1
-A_initial = 2
-A = 0.1
-a = 4
-k_initial = np.pi / a
-k = -1 * k_initial
-M_initial = 4
-M = 0.1
-m_initial = 4
-m = 0.1
-t = 0
-
 
 while True:
     vp.rate(100)
