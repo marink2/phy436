@@ -12,9 +12,10 @@ K = 0.1
 A_initial = 2
 A = 0.1
 a = 4
-N = 1
+N = 1                       # is half the number of atoms in the chain
 k_initial = np.pi / a
 k = 0
+k_int_val = 0
 M_initial = 4
 M = 0.1
 m_initial = 4
@@ -113,7 +114,10 @@ def add_atom(s):
     for j in range(14):
         atom[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
         atom2[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
+
         phase[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
+        phase[j].pos.y = -3
+
         phase2[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
 
     for j in range(14):
@@ -138,6 +142,10 @@ def lattice_spacing(s):
     global a, k_initial, k, t
     t = 0
     k = 0
+
+    for i in range(14):
+        phase[i].pos.y = -3
+
     wt_a.text = s.value
     a = s.value
     k_initial = np.pi / a
@@ -150,14 +158,18 @@ scene_main.append_to_caption("a (lattice)\n\n")
 
 
 def wave(b):
-    global k_initial, k, k_buttons, N, t
+    global k_initial, k_int_val, k, k_buttons, N, t
+
+    for i in range(14):
+        phase[i].pos.y = -3
 
     for h in range(15):
         k_buttons[h].background = vp.color.white
 
     b.background = vp.color.orange
     t = 0
-    k = int(b.text) * k_initial / N
+    k_int_val = int(b.text)
+    k = k_int_val * k_initial / N
 
 
 k_buttons = []
@@ -273,3 +285,26 @@ while True:
             atom2[i].pos.x = alpha * A * np.cos((0.5 * k * pos2_x_initial[i]) - w2 * t) + pos2_x_initial[i]
 
     t = t + 0.01
+
+    direction = A * np.cos((k * pos_x_initial[0]) - w * t) - A * np.cos((k * pos_x_initial[0]) - w * (t - 0.01))
+
+    index = int(k_int_val + N)
+
+    if k_int_val > 0:
+        index = index - 1
+
+    if direction > 0:
+        phase[index].pos.y = -1
+
+    if direction < 0:
+        phase[index].pos.y = -5
+
+    if direction == 0:
+        phase[index].pos.y = -3
+
+# -3
+# ++
+# 0
+# ++
+# 3
+# -3 -> back to begining
