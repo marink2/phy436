@@ -135,11 +135,12 @@ scene_main.append_to_caption(" atoms\n\n")
 
 
 def lattice_spacing(s):
-    global a, k_initial, k, N, t
+    global a, k_initial, k, t
     t = 0
     k = 0
     wt_a.text = s.value
     a = s.value
+    k_initial = np.pi / a
     add_atom(sl_atom)
 
 
