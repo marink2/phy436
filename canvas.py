@@ -104,7 +104,11 @@ def add_atom(s):
 
     for h in range(15):
         k_buttons[h].disabled = True
-        k_buttons[h].background = vp.color.white
+        if h == 7:
+            k_buttons[h].background = vp.color.orange
+
+        else:
+            k_buttons[h].background = vp.color.white
 
     for h in range(s.value + 1):
         k_buttons[h + (int(0.5 * (14 - s.value)))].disabled = False
@@ -179,7 +183,11 @@ def wave(b):
 k_buttons = []
 for i in range(-7, 8):
     if i == 0 or i == -1 or i == 1:
-        k_buttons.append(vp.button(text=str(i), background=vp.color.white, bind=wave, disabled=False))
+        if i == 0:
+            k_buttons.append(vp.button(text=str(i), background=vp.color.orange, bind=wave, disabled=False))
+
+        else:
+            k_buttons.append(vp.button(text=str(i), background=vp.color.white, bind=wave, disabled=False))
 
     else:
         k_buttons.append(vp.button(text=str(i), background=vp.color.white, bind=wave, disabled=True))
@@ -193,7 +201,7 @@ def spring(s):
     K = K_initial * s.value
 
 
-sl_K = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=spring)
+sl_K = vp.slider(min=0.1, max=6, value=0.1, step=0.1, bind=spring)
 wt_K = vp.wtext(text=sl_K.value)
 scene_main.append_to_caption("K N/m (Spring Force)\n\n")
 
@@ -205,7 +213,7 @@ def constant_A(s):
     A = A_initial * s.value
 
 
-sl_A = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=constant_A)
+sl_A = vp.slider(min=0.1, max=1, value=0.1, step=0.1, bind=constant_A)
 wt_A = vp.wtext(text=sl_A.value)
 scene_main.append_to_caption("A (Constant)\n\n\n\n")
 
