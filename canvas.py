@@ -37,6 +37,8 @@ scene_main = vp.canvas(width=600, height=200, userzoom=True, userspan=False,
 
 scene_main.append_to_caption("\n")
 
+# One atom type / two atom type acoustic branch (atom No. 1)
+
 atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=R, color=vp.color.cyan, emissive=True)]
 pos_x_initial = [0]
 phase = [vp.sphere(pos=vp.vector(0, -3, 0), radius=0.4, color=vp.color.white, emissive=True)]
@@ -51,6 +53,7 @@ for i in range(1, 14):
 
     pos_x_initial.append(a * i)
 
+# Two atom type acoustic branch (atom No. 2)
 
 atom2 = [vp.sphere(pos=vp.vector(0.5 * a, 3, 0), radius=r, color=vp.color.red, emissive=True, visible=False)]
 pos2_x_initial = [0.5 * a]
@@ -60,8 +63,25 @@ for i in range(1, 14):
     phase2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
     pos2_x_initial.append((a * i) + (0.5 * a))
 
+# Two atom type optic branch (atom No. 1 and No. 2)
+
+atom3 = [vp.sphere(pos=vp.vector(0, 6, 0), radius=R, color=vp.color.cyan, emissive=True, visible=False)]
+pos3_x_initial = [0]
+for i in range(1, 14):
+    atom3.append(vp.sphere(pos=vp.vector(a * i, 6, 0), radius=R, color=vp.color.cyan, emissive=True, visible=False))
+    pos3_x_initial.append(a * i)
+
+atom4 = [vp.sphere(pos=vp.vector(0.5 * a, 6, 0), radius=r, color=vp.color.red, emissive=True, visible=False)]
+pos4_x_initial = [0.5 * a]
+for i in range(1, 14):
+    atom4.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), 6, 0), radius=r, color=vp.color.red, emissive=True, visible=False))
+    pos4_x_initial.append((a * i) + (0.5 * a))
+
+# Lattice lines
+
 lattice_1 = vp.box(pos=vp.vector(0, 3, 0), length=6000, width=None, height=0.2)
 lattice_2 = vp.box(pos=vp.vector(0, -3, 0), length=6000, width=None, height=0.2)
+lattice_3 = vp.box(pos=vp.vector(0, 6, 0), length=6000, width=None, height=0.2, visible=False)
 
 """
 ------------------------------------------------------------------------------------
@@ -77,19 +97,28 @@ def toggle(b):
     if switch:
         b.text = '<b>Two Atom Type<b>'
         b.background = vp.color.green
+        lattice_3.visible = True
         switch = False
 
         for i in range(sl_atom.value):
             atom2[i].visible = True
             phase2[i].visible = True
 
+            atom3[i].visible = True
+            atom4[i].visible = True
+
     else:
         b.text = '<b>One Atom Type<b>'
         b.background = vp.color.cyan
+        lattice_3.visible = False
         switch = True
+
         for i in range(14):
             atom2[i].visible = False
             phase2[i].visible = False
+
+            atom3[i].visible = False
+            atom4[i].visible = False
 
 
 s_button = vp.button(text='<b>One Atom Type<b>', background=vp.color.cyan, pos=scene_main.title_anchor, bind=toggle)
@@ -116,12 +145,16 @@ def add_atom(s):
     for i in range(14):
         atom[i].visible = False
         atom2[i].visible = False
+        atom3[i].visible = False
+        atom4[i].visible = False
         phase[i].visible = False
         phase2[i].visible = False
 
     for j in range(14):
         atom[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
         atom2[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
+        atom3[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
+        atom4[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + (a * j + (0.5 * a))
 
         phase[j].pos.x = ((0.5 * a) - (0.5 * a) * s.value) + a * j
         phase[j].pos.y = -3
@@ -131,6 +164,8 @@ def add_atom(s):
     for j in range(14):
         pos_x_initial[j] = atom[j].pos.x
         pos2_x_initial[j] = atom2[j].pos.x
+        pos3_x_initial[j] = atom3[j].pos.x
+        pos4_x_initial[j] = atom4[j].pos.x
 
     for i in range(s.value):
         atom[i].visible = True
@@ -139,6 +174,9 @@ def add_atom(s):
         if not switch:
             atom2[i].visible = True
             phase2[i].visible = True
+
+            atom3[i].visible = True
+            atom4[i].visible = True
 
 
 sl_atom = vp.slider(min=2, max=14, value=2, step=2, bind=add_atom)
@@ -196,7 +234,8 @@ scene_main.append_to_caption(" 2π/Na (k)\n\n\n\n")
 
 
 def spring(s):
-    global K_initial, K
+    global K_initial, K, t
+    t = 0
     wt_K.text = s.value
     K = K_initial * s.value
 
@@ -228,6 +267,8 @@ def mass_M(s):
     for i in range(14):
         atom[i].radius = r_initial * s.value
         atom2[i].radius = R_initial / s.value
+        atom3[i].radius = r_initial * s.value
+        atom4[i].radius = R_initial / s.value
 
 
 sl_M = vp.slider(min=1, max=2, value=1, step=0.1, bind=mass_M)
@@ -278,8 +319,10 @@ while True:
 
     w = np.sqrt((4 * K * (np.sin(0.5 * k * a)) ** 2) / M)
     w2 = np.sqrt(((K * (M + m)) / (M * m)) - K * np.sqrt((((M + m) / (M * m)) ** 2) - ((4 / (M * m)) * (np.sin(0.5 * k * a)) ** 2)))
+    w3 = np.sqrt(((K * (M + m)) / (M * m)) + K * np.sqrt((((M + m) / (M * m)) ** 2) - ((4 / (M * m)) * (np.sin(0.5 * k * a)) ** 2)))
 
     alpha = ((2 * K) - ((w2 ** 2) * M)) / (2 * K * np.cos(0.5 * k * a))
+    alpha3 = ((2 * K) - ((w3 ** 2) * M)) / (2 * K * np.cos(0.5 * k * a))
 
     for i in range(14):
         if switch:
@@ -288,6 +331,8 @@ while True:
         else:
             atom[i].pos.x = A * np.cos((0.5 * k * pos_x_initial[i]) - w2 * t) + pos_x_initial[i]
             atom2[i].pos.x = alpha * A * np.cos((0.5 * k * pos2_x_initial[i]) - w2 * t) + pos2_x_initial[i]
+            atom3[i].pos.x = A * np.cos((0.5 * k * pos_x_initial[i]) - w3 * t) + pos3_x_initial[i]
+            atom4[i].pos.x = alpha3 * A * np.cos((0.5 * k * pos2_x_initial[i]) - w3 * t) + pos4_x_initial[i]
 
     t = t + 0.01
 
