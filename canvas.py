@@ -1,5 +1,5 @@
-import numpy as np
 import vpython as vp
+import numpy as np
 
 """
 ------------------------------------------------------------------------------------
@@ -16,9 +16,13 @@ N = 1                       # is half the number of atoms in the chain
 k_initial = np.pi / a
 k = 0
 k_int_val = 0
-M_initial = 4
+M_initial = 2
 M = 0.1
-m_initial = 4
+m_initial = 2
+R_initial = 0.4
+R = 0.4
+r_initial = 0.4
+r = 0.4
 m = 0.1
 t = 0
 
@@ -33,26 +37,26 @@ scene_main = vp.canvas(width=600, height=200, userzoom=True, userspan=False,
 
 scene_main.append_to_caption("\n")
 
-atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True)]
+atom = [vp.sphere(pos=vp.vector(0, 3, 0), radius=R, color=vp.color.cyan, emissive=True)]
 pos_x_initial = [0]
 phase = [vp.sphere(pos=vp.vector(0, -3, 0), radius=0.4, color=vp.color.white, emissive=True)]
 for i in range(1, 14):
     if i == 1:
-        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=True))
+        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=R, color=vp.color.cyan, emissive=True, visible=True))
         phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=True))
 
     else:
-        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=0.4, color=vp.color.cyan, emissive=True, visible=False))
+        atom.append(vp.sphere(pos=vp.vector(a * i, 3, 0), radius=R, color=vp.color.cyan, emissive=True, visible=False))
         phase.append(vp.sphere(pos=vp.vector(a * i, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
 
     pos_x_initial.append(a * i)
 
 
-atom2 = [vp.sphere(pos=vp.vector(0.5 * a, 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False)]
+atom2 = [vp.sphere(pos=vp.vector(0.5 * a, 3, 0), radius=r, color=vp.color.red, emissive=True, visible=False)]
 pos2_x_initial = [0.5 * a]
 phase2 = [vp.sphere(pos=vp.vector(0.5 * a, -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False)]
 for i in range(1, 14):
-    atom2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), 3, 0), radius=0.3, color=vp.color.red, emissive=True, visible=False))
+    atom2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), 3, 0), radius=r, color=vp.color.red, emissive=True, visible=False))
     phase2.append(vp.sphere(pos=vp.vector((a * i) + (0.5 * a), -3, 0), radius=0.4, color=vp.color.white, emissive=True, visible=False))
     pos2_x_initial.append((a * i) + (0.5 * a))
 
@@ -207,27 +211,20 @@ scene_main.append_to_caption("A (Constant)\n\n\n\n")
 
 
 def mass_M(s):
-    global M_initial, M, t
+    global M_initial, M, m_initial, m, R_initial, R, r_initial, r, t
     t = 0
     wt_M.text = s.value
-    M = M_initial * s.value
+    M = m_initial * s.value
+    m = M_initial / s.value
+
+    for i in range(14):
+        atom[i].radius = r_initial * s.value
+        atom2[i].radius = R_initial / s.value
 
 
-sl_M = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=mass_M)
+sl_M = vp.slider(min=1, max=2, value=1, step=0.1, bind=mass_M)
 wt_M = vp.wtext(text=sl_M.value)
-scene_main.append_to_caption("M (mass cyan)\n\n")
-
-
-def mass_m(s):
-    global m_initial, m, t
-    t = 0
-    wt_m.text = s.value
-    m = m_initial * s.value
-
-
-sl_m = vp.slider(min=0.1, max=10, value=0.1, step=0.1, bind=mass_m)
-wt_m = vp.wtext(text=sl_m.value)
-scene_main.append_to_caption("m (mass red)\n\n")
+scene_main.append_to_caption("M/m \n\n")
 
 # Mouse clicking controls
 
@@ -298,13 +295,3 @@ while True:
 
     if direction < 0:
         phase[index].pos.y = -5
-
-    if direction == 0:
-        phase[index].pos.y = -3
-
-# -3
-# ++
-# 0
-# ++
-# 3
-# -3 -> back to begining
